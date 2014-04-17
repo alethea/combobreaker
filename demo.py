@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+
 def max_len(n):
     def max_len_cond(b):
         return len(b) <= n
@@ -19,3 +20,14 @@ def linear_sweep(cond):
                 c = 0
         if c == 1:
             b.append(0);
+
+
+def distance(a, b):
+    if len(a) != len(b):
+        raise ValueError('a and b must be the same length')
+    dist = 0
+    for i in range(len(a)):
+        for j in range(8):
+            if (a[i] >> j) & 1 != (b[i] >> j) & 1:
+                dist += 1
+    return dist
