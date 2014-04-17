@@ -21,7 +21,7 @@ def linear_sweep(cond):
                 b[i] += c
                 c = 0
         if c == 1:
-            b.append(0);
+            b.append(0)
 
 
 def distance(a, b):
