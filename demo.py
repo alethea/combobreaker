@@ -54,3 +54,17 @@ def shortest(algo, space, ref):
             min_dist = dist
             min_string = string
     return (min_dist, min_string)
+
+
+def demo(algo, n, ref_string):
+    print('Reference string:', ref_string)
+    print('Algorithm:', algo)
+    print('Maximum distance:', max_distance(algo))
+    d, s = shortest(algo, linear_sweep(max_len(n)), digest(algo, ref_string))
+    print('Minium distance:', d)
+    print('Closest string:', repr(s))
+
+
+if __name__ == '__main__':
+    demo('md5', 2, b'hi')
+    demo('md5', 2, b'hello')
