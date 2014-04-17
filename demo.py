@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import hashlib
+
 
 def max_len(n):
     def max_len_cond(b):
@@ -31,3 +33,24 @@ def distance(a, b):
             if (a[i] >> j) & 1 != (b[i] >> j) & 1:
                 dist += 1
     return dist
+
+
+def digest(algo, string):
+    h = hashlib.new(algo)
+    h.update(string)
+    return h.digest()
+
+
+def max_distance(algo):
+    return hashlib.new(algo).digest_size * 8
+
+
+def shortest(algo, space, ref):
+    min_dist = max_distance(algo)
+    min_string = None
+    for string in space:
+        dist = distance(digest(algo, string), ref)
+        if dist < min_dist:
+            min_dist = dist
+            min_string = string
+    return (min_dist, min_string)
