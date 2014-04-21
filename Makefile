@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wpedantic -std=c99
+CFLAGS = -O2 -Wall -Werror -pedantic -std=c99
 CPPFLAGS = 
 INCLUDES =
 LFLAGS = -lOpenCL
