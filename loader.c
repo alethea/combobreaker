@@ -44,7 +44,7 @@ int load_softfail(const char *filename, char **data, size_t *length) {
     size_t size;
     char *buf;
 
-    fp = fopen(filename, "r");
+    fp = fopen(filename, "rb");
     if (fp == NULL) {
         return -1;
     }
