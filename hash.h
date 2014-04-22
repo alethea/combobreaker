@@ -5,6 +5,6 @@
 
 #define SHA256_LENGTH 32
 
-char *sha256(char *message, size_t length);
+char *sha256(const char *message, size_t length);
 
 #endif
