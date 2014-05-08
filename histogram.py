@@ -2,14 +2,16 @@
 
 import sys
 import csv
+import string
+from collections import OrderedDict
 
 
 class Histogram:
-    def __init__(self):
-        self.d = {}
+    def __init__(self, alphabet):
+        self.d = OrderedDict(((c, 0) for c in alphabet))
 
     def feed(self, character, frequency):
-        self.d[character] = self.d.get(character, 0) + frequency
+        self.d[character] += frequency
 
     def ordering(self):
         return [c for c, f in sorted(self.d.items(),
@@ -18,24 +20,21 @@ class Histogram:
 
 
 class Chain:
-    def __init__(self):
-        self.d = {}
+    def __init__(self, alphabet):
+        self.d = OrderedDict(((c, Histogram(alphabet)) for c in alphabet))
+        self.d[''] = Histogram(alphabet)
 
     def feed(self, password, frequency):
         last = ''
         for character in password:
-            try:
-                self.d[last].feed(character, frequency)
-            except KeyError:
-                self.d[last] = Histogram()
-                self.d[last].feed(character, frequency)
+            if character not in self.d:
+                return
+        for character in password:
+            self.d[last].feed(character, frequency)
             last = character
 
     def ordering(self):
-        res = {}
-        for character, following in self.d.items():
-            res[character] = following.ordering()
-        return res
+        return OrderedDict(((c, f.ordering()) for c,f in self.d.items()))
 
 
 def read(filename):
@@ -46,11 +45,11 @@ def read(filename):
 
 
 def main():
-    chain = Chain()
+    chain = Chain(string.ascii_lowercase + string.digits)
     for password, frequency in read(sys.argv[1]):
         chain.feed(password, frequency)
     for c, f in chain.ordering().items():
-        print(c, f)
+        print(c, ' '.join(f))
 
 
 if __name__ == '__main__':
