@@ -50,12 +50,27 @@ def read(filename):
             yield (row[0], int(row[1]))
 
 
+def write(template, output, **kwargs):
+    with open(template) as f:
+        t = string.Template(f.read())
+    with open(output, 'w') as f:
+        f.write(t.safe_substitute(**kwargs))
+
+
+def output_c(template, output, chain):
+    ordering = chain.ordering()
+    a_chain = ',\n'.join(('    {{{0}}}'.format(', '.join(
+        ("'{0}'".format(x) for x in xs)))
+        for c, xs in ordering.items() if c != ''))
+    a_initial = ', '.join(("'{0}'".format(c) for c in ordering['']))
+    write(template, output, alphabet_chain=a_chain, alphabet_initial=a_initial)
+
+
 def main():
     chain = Chain(string.ascii_lowercase + string.digits)
-    for password, frequency in read(sys.argv[1]):
+    for password, frequency in read(sys.argv[2]):
         chain.feed(password, frequency)
-    for c, f in chain.ordering().items():
-        print(c, ' '.join(f))
+    output_c(sys.argv[1], sys.argv[-1], chain)
 
 
 if __name__ == '__main__':
