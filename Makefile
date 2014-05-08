@@ -5,9 +5,15 @@ INCLUDES =
 LFLAGS = -lOpenCL
 TARGET = combobreaker
 
+PASSWORDS_SRC = http://xato.net/files/10k%20most%20common%20with%20frequency.zip
+PASSWORDS = passwords.csv
+
 SRCS := $(wildcard *.c)
 OBJS = $(SRCS:.c=.o)
 DEPS = $(SRCS:.c=.d)
+
+$(PASSWORDS):
+	wget $(PASSWORDS_SRC) -O- | funzip > $(PASSWORDS)
 
 all: $(TARGET)
 
@@ -25,4 +31,4 @@ $(TARGET): $(OBJS)
 .PHONY: clean
 
 clean:
-	rm -f $(TARGET) *.o *.d
+	rm -f $(TARGET) $(PASSWORDS) *.o *.d
