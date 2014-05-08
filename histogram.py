@@ -13,16 +13,20 @@ class Histogram:
     def feed(self, character, frequency):
         self.d[character] += frequency
 
-    def ordering(self):
-        return [c for c, f in sorted(self.d.items(),
-                                     key=lambda e: e[1],
-                                     reverse=True)]
+    def ordering(self, total=None):
+        if total is None:
+            key = lambda e: e[1]
+        else:
+            total_max = max(total.d.values())
+            key = lambda e: e[1] == 0 and total.d[e[0]] - total_max or e[1]
+        return [c for c, f in sorted(self.d.items(), key=key, reverse=True)]
 
 
 class Chain:
     def __init__(self, alphabet):
         self.d = OrderedDict(((c, Histogram(alphabet)) for c in alphabet))
         self.d[''] = Histogram(alphabet)
+        self.total = Histogram(alphabet)
 
     def feed(self, password, frequency):
         last = ''
@@ -31,10 +35,12 @@ class Chain:
                 return
         for character in password:
             self.d[last].feed(character, frequency)
+            self.total.feed(character, frequency)
             last = character
 
     def ordering(self):
-        return OrderedDict(((c, f.ordering()) for c,f in self.d.items()))
+        t = self.total
+        return OrderedDict(((c, f.ordering(t)) for c, f in self.d.items()))
 
 
 def read(filename):
