@@ -1,4 +1,5 @@
 *.o
 *.d
+*.gen.c
 combobreaker
 passwords.csv
