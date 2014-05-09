@@ -1,13 +1,22 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "hash.h"
 
 int main() {
-    char *hash;
+    char *test;
+    char *ref;
+    int match;
 
-    hash = sha256("hello", 5);
-    print_hash(hash, SHA256_LENGTH);
+    test = sha256("hello", 5);
+    ref = scan_hash(SHA256_LENGTH);
 
-    free(hash);
+    match = memcmp(test, ref, SHA256_LENGTH);
+
+    free(ref);
+    free(test);
+    if (match) {
+        return 1;
+    }
     return 0;
 }
