@@ -7,4 +7,7 @@
 
 char *sha256(const char *message, size_t length);
 
+char *scan_hash(size_t length);
+void print_hash(const char *hash, size_t length);
+
 #endif
