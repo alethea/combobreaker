@@ -5,20 +5,15 @@ CPPFLAGS =
 INCLUDES =
 LFLAGS = -lOpenCL
 TARGET = combobreaker
-
-PASSWORDS_SRC = http://xato.net/files/10k%20most%20common%20with%20frequency.zip
 PASSWORDS = passwords.csv
 
 TEMPLATES = $(wildcard *.t)
 GENS = $(TEMPLATES:.t=.gen.c)
-SRCS = $(wildcard *.c)
+SRCS = $(wildcard *.c) $(GENS)
 OBJS = $(SRCS:.c=.o)
 DEPS = $(SRCS:.c=.d)
 
 all: $(TARGET)
-
-$(PASSWORDS):
-	wget $(PASSWORDS_SRC) -O- | funzip > $(PASSWORDS)
 
 $(TARGET): $(OBJS)
 	$(CC)  -o $@ $^ $(CFLAGS) $(LFLAGS)
@@ -36,5 +31,7 @@ $(TARGET): $(OBJS)
 
 .PHONY: clean
 
+.SECONDARY: $(GENS)
+
 clean:
-	rm -f $(TARGET) $(PASSWORDS) *.o *.d *.gen
+	rm -f $(TARGET) *.o *.d *.gen.c
