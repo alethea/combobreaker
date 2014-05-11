@@ -1,22 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "hash.h"
+#include "alphabet.h"
 
 int main() {
-    char *test;
-    char *ref;
-    int match;
+    alphabet_iter *iter;
 
-    test = sha256("hello", 5);
-    ref = scan_hash(SHA256_LENGTH);
-
-    match = memcmp(test, ref, SHA256_LENGTH);
-
-    free(ref);
-    free(test);
-    if (match) {
-        return 1;
-    }
+    iter = make_alphabet_iter(8);
+    free_alphabet_iter(iter);
     return 0;
 }
