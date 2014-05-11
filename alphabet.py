@@ -26,7 +26,7 @@ class Chain:
     def __init__(self, alphabet):
         self.d = OrderedDict(((c, Histogram(alphabet)) for c in alphabet))
         self.d[''] = Histogram(alphabet)
-        self.total = Histogram(alphabet)
+        self.t = Histogram(alphabet)
 
     def feed(self, password, frequency):
         last = ''
@@ -35,12 +35,15 @@ class Chain:
                 return
         for character in password:
             self.d[last].feed(character, frequency)
-            self.total.feed(character, frequency)
+            self.t.feed(character, frequency)
             last = character
 
     def ordering(self):
-        t = self.total
-        return OrderedDict(((c, f.ordering(t)) for c, f in self.d.items()))
+        return OrderedDict(
+                ((c, self.d[c].ordering(self.t)) for c in self.total()))
+
+    def total(self):
+        return self.t.ordering()
 
 
 def read(filename):
@@ -58,12 +61,13 @@ def write(template, output, **kwargs):
 
 
 def output_c(template, output, chain):
-    ordering = chain.ordering()
-    a_chain = ',\n'.join(('    {{{0}}}'.format(', '.join(
-        ("'{0}'".format(x) for x in xs)))
-        for c, xs in ordering.items() if c != ''))
-    a_initial = ', '.join(("'{0}'".format(c) for c in ordering['']))
-    write(template, output, alphabet_chain=a_chain, alphabet_initial=a_initial)
+    total = chain.total()
+    index = dict(zip(total, (str(x) for x in range(len(total)))))
+    block = chain.ordering().items()
+    a_chain = ',\n    '.join(('{{{0}}}'.format(', '.join(
+        (index[x] for x in xs))) for c, xs in block))
+    a_map = ', '.join(("'{0}'".format(c) for c in total))
+    write(template, output, alphabet_chain=a_chain, alphabet_map=a_map)
 
 
 def main():
