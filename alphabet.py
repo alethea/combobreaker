@@ -40,10 +40,10 @@ class Chain:
 
     def ordering(self):
         return OrderedDict(
-                ((c, self.d[c].ordering(self.t)) for c in self.total()))
+                ((c, self.d[c].ordering(self.t)) for c in self.init()))
 
-    def total(self):
-        return self.t.ordering()
+    def init(self):
+        return self.d[''].ordering()
 
 
 def read(filename):
@@ -61,12 +61,12 @@ def write(template, output, **kwargs):
 
 
 def output_c(template, output, chain):
-    total = chain.total()
-    index = dict(zip(total, (str(x) for x in range(len(total)))))
+    init = chain.init()
+    index = dict(zip(init, (str(x) for x in range(len(init)))))
     block = chain.ordering().items()
     a_chain = ',\n    '.join(('{{{0}}}'.format(', '.join(
         (index[x] for x in xs))) for c, xs in block))
-    a_map = ', '.join(("'{0}'".format(c) for c in total))
+    a_map = ', '.join(("'{0}'".format(c) for c in init))
     write(template, output, alphabet_chain=a_chain, alphabet_map=a_map)
 
 
