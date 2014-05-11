@@ -1,6 +1,5 @@
 #ifndef _COMBOBREAKER_ALPHABET_H_
 #define _COMBOBREAKER_ALPHABET_H_
-#include <stdlib.h>
 #include <stdint.h>
 
 #define ALPHABET_SIZE 36
@@ -12,10 +11,12 @@ typedef struct {
     char *buf;
     int8_t *idx;
     int8_t *off;
-    size_t len;
+    int len;
+    int cur;
 } alphabet_iter;
 
-alphabet_iter *make_alphabet_iter(size_t max_length);
+alphabet_iter *make_alphabet_iter(int max_length);
 void free_alphabet_iter(alphabet_iter *iter);
+char *alphabet_next(alphabet_iter *iter);
 
 #endif
