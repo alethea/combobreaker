@@ -102,7 +102,6 @@ or_fail(clEnqueueReadBuffer(command_queue, hash, CL_TRUE, 0,
 
 /* Display Result */
 print_hash(resulthash, 32);
-printf("Reading from buffer %d\n", ret ); 
 
 /* Finalization */
 or_fail(clFinish(command_queue),
