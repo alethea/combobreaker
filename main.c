@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
-#include <sys/timeb.h>
+#include <time.h>
 #include "hash.h"
 #include "alphabet.h"
 
@@ -11,8 +11,8 @@ int main() {
     char *ref;
     int match;
     uint64_t count;
-    struct timeb start;
-    struct timeb end;
+    struct timespec start;
+    struct timespec end;
     double duration;
     alphabet_iter *iter;
 
@@ -21,16 +21,16 @@ int main() {
     iter = make_alphabet_iter(8);
     ref = scan_hash(SHA256_LENGTH);
 
-    ftime(&start);
+    clock_gettime(CLOCK_MONOTONIC, &start);
     while (match) {
         alphabet_next(iter);
         test = sha256(iter->buf, iter->cur + 1);
         match = memcmp(test, ref, SHA256_LENGTH);
         count++;
     }
-    ftime(&end);
-    duration = (double) (end.time - start.time);
-    duration += (double) (end.millitm - start.millitm);
+    clock_gettime(CLOCK_MONOTONIC, &end);
+    duration = (double) (end.tv_sec - start.tv_sec);
+    duration += ((double) (end.tv_nsec) - ((double) start.tv_nsec)) / 1000000;
 
     if (!match) {
         puts(iter->buf);
