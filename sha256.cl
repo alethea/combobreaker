@@ -25,33 +25,19 @@ typedef enum {
     a, b, c, d, e, f, g, h
 } sha256_reg_t;
 
-uint Ch(uint x, uint y, uint z) {
-    return (x & y) ^ (~x & z);
-}
+#define Ch(x, y, z) ((x & y) ^ (~x & z))
 
-uint Maj(uint x, uint y, uint z) {
-    return (x & y) ^ (x & z) ^ (y & z);
-}
+#define Maj(x, y, z) ((x & y) ^ (x & z) ^ (y & z))
 
-uint S0(uint x) {
-    return rotate(x, -2U) ^ rotate(x, -13U) ^ rotate(x, -22U);
-}
+#define S0(x) (rotate(x, -2U) ^ rotate(x, -13U) ^ rotate(x, -22U))
 
-uint S1(uint x) {
-    return rotate(x, -6U) ^ rotate(x, -11U) ^ rotate(x, -25U);
-}
+#define S1(x) (rotate(x, -6U) ^ rotate(x, -11U) ^ rotate(x, -25U))
 
-uint d0(uint x) {
-    return rotate(x, -7U) ^ rotate(x, -18U) ^ (x >> 3);
-}
+#define d0(x) (rotate(x, -7U) ^ rotate(x, -18U) ^ (x >> 3))
 
-uint d1(uint x) {
-    return rotate(x, -17U) ^ rotate(x, -19U) ^ (x >> 10);
-}
+#define d1(x) (rotate(x, -17U) ^ rotate(x, -19U) ^ (x >> 10))
 
-uint endian_swap(uint x) {
-    return rotate(x & 0x00ff00ff, 24U) | (rotate(x, 8U) & 0x00ff00ff);
-}
+#define endian_swap(x) (rotate(x & 0x00ff00ff, 24U) | (rotate(x, 8U) & 0x00ff00ff))
 
 __kernel void sha256(__global char *message, __global int *length, __global uint *hash) {
     uint T1, T2;
