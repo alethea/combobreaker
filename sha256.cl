@@ -47,17 +47,17 @@ __kernel void sha256(__global char *message, __global int *length, __global uint
     uint reg[8];
     int j, k;
     
-    for (k = 0; k < 16; k++) {
+    for (k = 0; k < 15; k++) {
         M[k] = 0;
     }
-    Mchar[0] = 'a';
-    Mchar[1] = 'b';
-    Mchar[2] = 'c';
-    Mchar[3] = 0x80;
+    for (k = 0; k < *length; k++) {
+        Mchar[k] = message[k];
+    }
+    Mchar[*length] = 0x80;
     #ifdef __LITTLE_ENDIAN__
-        M[15] = endian_swap((uint) 3 * 8);
+        M[15] = endian_swap((uint) *length * 8);
     #else
-        M[15] = 3 * 8;
+        M[15] = *length * 8;
     #endif
 
     for (k = 0; k < 8; k++) {
