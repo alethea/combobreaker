@@ -61,10 +61,6 @@ __kernel void sha256(__global char *message, __global int *length, __global uint
     #endif
 
     for (k = 0; k < 8; k++) {
-        hash[k] = M[k];
-    }
-
-    for (k = 0; k < 8; k++) {
         reg[k] = H0[k];
     }
     for (j = 0; j <= 63; j++) {
