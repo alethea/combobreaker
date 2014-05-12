@@ -14,16 +14,7 @@
 #include <CL/cl.h>
 #endif
 
-#include <stdio.h>
-#include <stdlib.h>
- 
-#ifdef __APPLE__
-#include <OpenCL/opencl.h>
-#else
-#include <CL/cl.h>
-#endif
- 
-#define PROGRAM_FILE "sha256.cl"
+#define SHA256_KERNEL "sha256.cl"
 
 void or_fail(cl_int err, char * fmt) {
     if (err) {
@@ -43,15 +34,14 @@ int main() {
     cl_platform_id platform_id = NULL;
     cl_uint ret_num_devices;
     cl_uint ret_num_platforms;
-    cl_int ret;
+    cl_int err;
      
     char resulthash[32];
 
     char *source_str;
     size_t source_size;
-    ret = 0;
     /* Load the source code containing the kernel*/
-    load(PROGRAM_FILE, &source_str, &source_size);
+    load(SHA256_KERNEL, &source_str, &source_size);
 
     /* Get Platform and Device Info */
     or_fail(clGetPlatformIDs(1, &platform_id, &ret_num_platforms),
@@ -61,26 +51,33 @@ int main() {
         &device_id, &ret_num_devices),"Could not get device ID: %d\n");
 
     /* Create OpenCL context */
-    context = clCreateContext(NULL, 1, &device_id, NULL, NULL, &ret);
+    context = clCreateContext(NULL, 1, &device_id, NULL, NULL, &err);
+    or_fail(err, "Could not initialize OpenCL context: %d");
      
     /* Create Command Queue */
-    command_queue = clCreateCommandQueue(context, device_id, 0, &ret);
+    command_queue = clCreateCommandQueue(context, device_id, 0, &err);
+    or_fail(err, "Count not create command queue: %d");
      
     /* Create Memory Buffer */
-    message = clCreateBuffer(context, CL_MEM_READ_WRITE, 8 * sizeof(char), NULL, &ret);
-    hash = clCreateBuffer(context, CL_MEM_READ_WRITE, 8 * sizeof(cl_uint), NULL, &ret);
-    length= clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(cl_int), NULL, &ret);
+    message = clCreateBuffer(context, CL_MEM_READ_WRITE, 8 * sizeof(char), NULL, &err);
+    or_fail(err, "Could not create message buffer: %d\n");
+    hash = clCreateBuffer(context, CL_MEM_READ_WRITE, 8 * sizeof(cl_uint), NULL, &err);
+    or_fail(err, "Could not create hash buffer: %d\n");
+    length= clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(cl_int), NULL, &err);
+    or_fail(err, "Could not create length buffer: %d\n");
 
     /* Create Kernel Program from the source */
     program = clCreateProgramWithSource(context, 1, (const char **)&source_str,
-    (const size_t *)&source_size, &ret);
+        (const size_t *)&source_size, &err);
+    or_fail(err, "Could not create program object: %d\n");
      
     /* Build Kernel Program */
     or_fail(clBuildProgram(program, 1, &device_id, NULL, NULL, NULL),
             "Could not build program: %d\n");
 
     /* Create OpenCL Kernel */
-    kernel = clCreateKernel(program, "sha256", &ret);
+    kernel = clCreateKernel(program, "sha256", &err);
+    or_fail(err, "Could not create kernel: %d\n");
      
     /* Set OpenCL Kernel Parameters */
     or_fail(clSetKernelArg(kernel, 0, sizeof(cl_mem), &message),
@@ -121,7 +118,6 @@ int main() {
             "Could not release command queue: %d\n");
     or_fail(clReleaseContext(context),
             "Could not release context: %d\n");
-
     free(source_str);
      
     return 0;
